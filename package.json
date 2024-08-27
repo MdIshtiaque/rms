@@ -14,8 +14,14 @@
         "vite": "^5.0"
     },
     "dependencies": {
+        "@emotion/react": "^11.13.3",
+        "@emotion/styled": "^11.13.0",
+        "@heroicons/vue": "^2.1.5",
         "@inertiajs/vue3": "^1.2.0",
+        "@mui/icons-material": "^6.0.0",
+        "@mui/material": "^6.0.0",
         "@vitejs/plugin-vue": "^5.1.2",
+        "material-icons": "^1.13.12",
         "vue": "^3.4.38"
     }
 }
