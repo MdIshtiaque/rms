@@ -7,9 +7,12 @@
 @layer base {
     body {
         font-family: "Poppins", sans-serif;
+        overflow-x: hidden;
     }
 }
-
+/** {*/
+/*    outline: 1px solid red;*/
+/*}*/
 @layer components {
     input[type="text"],
     input[type="email"],
