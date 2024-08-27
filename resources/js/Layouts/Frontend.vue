@@ -12,7 +12,7 @@ const setActiveLink = (link) => {
 </script>
 
 <template>
-    <div class="w-full h-16 bg-purple-800 flex justify-between shadow-2xl items-center px-6">
+    <div class="w-full h-16 nav flex justify-between shadow-2xl items-center px-6">
         <!-- Logo -->
         <div class="text-white text-2xl font-bold">
             Logo
@@ -60,17 +60,16 @@ const setActiveLink = (link) => {
             <Link
                 href="/login"
                 @click="setActiveLink('Sign in')"
-                :class="{ active: activeLink === 'Sign in' }"
-                class="cursor-pointer px-4 py-2 shadow-2xl font-bold bg-gray-500 rounded-[25px_10px_25px] transition-transform duration-150 ease-in-out transform active:scale-95 active:shadow-none">
+                class="cursor-pointer px-4 py-2 shadow-2xl font-bold bg-blue-950 rounded-[25px_10px_25px] transition-colors duration-300 ease-in-out transform hover:bg-indigo-600 active:scale-95 active:shadow-none">
                 Sign in
             </Link>
             <a
                 @click="setActiveLink('Sign up')"
-                :class="{ active: activeLink === 'Sign up' }"
-                class="cursor-pointer px-4 py-2 shadow-2xl font-bold bg-amber-500 rounded-[25px_10px_25px] transition-transform duration-150 ease-in-out transform active:scale-95 active:shadow-none">
+                class="cursor-pointer px-4 py-2 shadow-2xl font-bold bg-blue-950 rounded-[25px_10px_25px] transition-colors duration-300 ease-in-out transform hover:bg-indigo-600 active:scale-95 active:shadow-none">
                 Sign up
             </a>
         </div>
+
 
         <!-- Mobile Menu Button -->
         <div class="md:hidden">
@@ -84,16 +83,19 @@ const setActiveLink = (link) => {
             </button>
         </div>
     </div>
-    <div class="m-5 p-5">
         <slot />
-    </div>
 </template>
 
 <style scoped>
 .active,
 .active-hover:hover {
     border-radius: 25px 10px 25px;
-    background-color: #5fdb21;
+    background-color: #4f46e5; /* This is the hex value for Tailwind's indigo-600 */
     transition: background-color 0.3s ease, border-radius 0.3s ease;
 }
+
+.nav {
+    background: linear-gradient(90deg, #4e54c8 0%, #8f94fb 100%);
+}
+
 </style>
