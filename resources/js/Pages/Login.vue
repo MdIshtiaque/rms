@@ -25,11 +25,11 @@ defineOptions({ layout: Frontend });
                 <form>
                     <div class="mb-6">
                         <label for="email">Email</label>
-                        <input type="email" id="email" class="w-full p-2 border border-gray-300 rounded">
+                        <input type="email" id="email" autocomplete="username" class="w-full p-2 border border-gray-300 rounded">
                     </div>
                     <div class="mb-6">
                         <label for="password">Password</label>
-                        <input type="password" id="password" class="w-full p-2 border border-gray-300 rounded">
+                        <input type="password" id="password" autocomplete="current-password" class="w-full p-2 border border-gray-300 rounded">
                     </div>
                     <div class="mb-6 text-center md:text-left">
                         <p class="text-slate-500 mb-2">Don't have an account?

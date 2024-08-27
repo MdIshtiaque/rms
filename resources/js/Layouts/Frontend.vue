@@ -22,7 +22,7 @@ const toggleMobileMenu = () => {
     <div class="w-full h-16 nav flex justify-between shadow-2xl items-center px-6">
         <!-- Logo -->
         <div class="text-white text-2xl font-bold">
-            Logo
+            <img src="../../../public/assets/logo.png" alt="Logo" class="h-24" />
         </div>
 
         <!-- Navigation Links Container for Centering -->
