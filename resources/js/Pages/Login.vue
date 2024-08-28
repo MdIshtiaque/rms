@@ -52,7 +52,7 @@ const submit = () => {
                         <p class="text-slate-500 mb-2">Don't have an account?
                             <Link href="#" class="text-link">Register</Link>
                         </p>
-                        <button class="primary-btn">Login</button>
+                        <button class="primary-btn" :disabled="form.processing">Login</button>
                     </div>
                 </form>
             </div>

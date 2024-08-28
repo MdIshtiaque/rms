@@ -44,7 +44,6 @@ const setActiveLink = (link) => {
 };
 
 const isLinkActive = (name) => {
-    console.log(activeLink.value.startsWith(name));
     return activeLink.value.startsWith(name);
 };
 const isParentActive = (parent) => {
@@ -67,13 +66,14 @@ const isParentActive = (parent) => {
             </div>
             <nav class="mt-5 px-2">
                 <ul class="space-y-2">
-                    <li
+                    <Link
+                        href="/admin/dashboard"
                         class="flex items-center active-hover px-4 py-2 cursor-pointer transition-all duration-300 ease-in-out rounded-[45px_10px_45px]"
                         :class="{ 'active': $page.component === 'Backend/Dashboard' }"
                         @click="setActiveLink('Home')">
                         <HomeIcon class="h-5 w-5 mr-3"/>
                         Home
-                    </li>
+                    </Link>
                     <li
                         class="flex items-center justify-between active-hover px-4 py-2 cursor-pointer transition-all duration-300 ease-in-out rounded-[45px_10px_45px]"
                         :class="{ 'parent-active': isParentActive('Profile') }"
