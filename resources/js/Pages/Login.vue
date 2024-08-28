@@ -6,7 +6,7 @@ defineOptions({ layout: Frontend });
 </script>
 
 <template>
-    <div class="flex flex-col md:flex-row w-full h-screen">
+    <div class="flex flex-col md:flex-row w-full h-[100vh]">
         <!-- Left Side: Welcome Section -->
         <div class="relative flex flex-col justify-center items-start pl-[5%] w-full md:w-2/5 h-1/2 md:h-screen blank">
             <Bubble />

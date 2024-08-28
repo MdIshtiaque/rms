@@ -55,6 +55,14 @@
     .primary-btn:hover {
         background: linear-gradient(90deg, #3d43b3 0%, #7a7fe6 100%);
     }
+    .primary-color {
+        background: linear-gradient(90deg, #4e54c8 0%, #8f94fb 100%);
+    }
+
+    .primary-gradient-color{
+        background: linear-gradient(100deg, #6c2eff 0%, #02278c 100%);
+    }
+
 
 }
 @layer utilities {
