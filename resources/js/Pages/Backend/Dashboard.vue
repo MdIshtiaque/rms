@@ -5,7 +5,7 @@ defineOptions({layout: Backend})
 </script>
 
 <template>
-
+    <Head title="| Dashboard"/>
 </template>
 
 <style scoped>

@@ -2,10 +2,25 @@
 import Frontend from "../Layouts/Frontend.vue";
 import { Link } from "@inertiajs/vue3";
 import Bubble from "../Components/Bubble.vue";
+import {useForm} from "@inertiajs/vue3";
 defineOptions({ layout: Frontend });
+
+const form = useForm({
+    'email': null,
+    'password': null,
+    'remember': null,
+})
+
+const submit = () => {
+    form.post('/login', {
+        preserveScroll: true,
+        onError: () => form.reset('password')
+    })
+}
 </script>
 
 <template>
+    <Head title="| Login"/>
     <div class="flex flex-col md:flex-row w-full h-[100vh]">
         <!-- Left Side: Welcome Section -->
         <div class="relative flex flex-col justify-center items-start pl-[5%] w-full md:w-2/5 h-1/2 md:h-screen blank">
@@ -22,14 +37,16 @@ defineOptions({ layout: Frontend });
         <div class="flex flex-col w-full justify-center md:w-3/5 h-1/2 md:h-screen input-background">
             <h1 class="title text-center">Sign in to your account</h1>
             <div class="w-11/12 md:w-2/4 mt-8 md:mt-10 mx-auto">
-                <form>
+                <form @submit.prevent="submit">
                     <div class="mb-6">
                         <label for="email">Email</label>
-                        <input type="email" id="email" autocomplete="username" class="w-full p-2 border border-gray-300 rounded">
+                        <input type="email" id="email" autocomplete="username" class="w-full p-2 border border-gray-300 rounded" v-model="form.email">
+                        <small class="error" v-if="form.errors.email">{{ form.errors.email }}</small>
                     </div>
                     <div class="mb-6">
                         <label for="password">Password</label>
-                        <input type="password" id="password" autocomplete="current-password" class="w-full p-2 border border-gray-300 rounded">
+                        <input type="password" id="password" autocomplete="current-password" class="w-full p-2 border border-gray-300 rounded" v-model="form.password">
+                        <small class="error" v-if="form.errors.password">{{ form.errors.password }}</small>
                     </div>
                     <div class="mb-6 text-center md:text-left">
                         <p class="text-slate-500 mb-2">Don't have an account?

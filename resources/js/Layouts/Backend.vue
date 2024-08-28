@@ -69,7 +69,7 @@ const isParentActive = (parent) => {
                 <ul class="space-y-2">
                     <li
                         class="flex items-center active-hover px-4 py-2 cursor-pointer transition-all duration-300 ease-in-out rounded-[45px_10px_45px]"
-                        :class="{ 'active': isLinkActive('Home') }"
+                        :class="{ 'active': $page.component === 'Backend/Dashboard' }"
                         @click="setActiveLink('Home')">
                         <HomeIcon class="h-5 w-5 mr-3"/>
                         Home
@@ -119,7 +119,10 @@ const isParentActive = (parent) => {
                     <Bars3Icon v-if="!isSidebarVisible" class="h-6 w-6"/>
                     <Bars3BottomRightIcon v-else class="h-6 w-6"/>
                 </button>
-                <Link href="#"
+                <Link href="/logout"
+                      method="post"
+                      as="button"
+                      type="button"
                       class="flex gap-2 focus:outline-none header font-bold cursor-pointer shadow-2xl transition-colors duration-300 ease-in-out transform hover:text-indigo-600 active:scale-95 active:shadow-none"
                       aria-label="Logout"
                 >
