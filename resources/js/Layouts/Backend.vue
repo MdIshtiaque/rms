@@ -1,30 +1,59 @@
 <script setup>
-import {ref} from 'vue';
+import { ref } from 'vue';
 import {
     ArrowLeftStartOnRectangleIcon,
-    Bars3BottomRightIcon,
-    Bars3Icon,
+    ChevronDownIcon,
+    ChevronUpIcon,
     CogIcon,
     HomeIcon,
-    UserCircleIcon
+    UserCircleIcon,
+    Bars3BottomRightIcon,
+    Bars3Icon
 } from "@heroicons/vue/24/solid";
 import { Link } from "@inertiajs/vue3";
 
-const isSidebarVisible = ref(true); // Ensure the sidebar is visible by default on desktop
+const isSidebarVisible = ref(true);
 const activeLink = ref('Home'); // Default active link
-
+const submenuVisibility = ref({});
 const toggleSidebar = () => {
     isSidebarVisible.value = !isSidebarVisible.value;
 };
 
+// Toggles the visibility of submenus
+const toggleSubmenu = (name) => {
+    // Automatically close other submenus when one is opened
+    if (!submenuVisibility.value[name]) {
+        for (const key in submenuVisibility.value) {
+            submenuVisibility.value[key] = false;
+        }
+    }
+    submenuVisibility.value[name] = !submenuVisibility.value[name];
+};
+
 const setActiveLink = (link) => {
     activeLink.value = link;
+    // Close all submenus when selecting a main menu item that doesn't have submenus
+    if (!link.includes('/')) {
+        for (const key in submenuVisibility.value) {
+            submenuVisibility.value[key] = false;
+        }
+    }
     if (window.innerWidth <= 768) {
         isSidebarVisible.value = false;
     }
 };
 
+const isLinkActive = (name) => {
+    console.log(activeLink.value.startsWith(name));
+    return activeLink.value.startsWith(name);
+};
+const isParentActive = (parent) => {
+    return Object.keys(submenuVisibility.value).some(
+        key => key.startsWith(parent) && submenuVisibility.value[key] && isLinkActive(parent)
+    );
+};
 </script>
+
 
 <template>
     <div class="flex w-full h-screen">
@@ -40,32 +69,43 @@ const setActiveLink = (link) => {
                 <ul class="space-y-2">
                     <li
                         class="flex items-center active-hover px-4 py-2 cursor-pointer transition-all duration-300 ease-in-out rounded-[45px_10px_45px]"
-                        :class="{ 'active': activeLink === 'Home' }"
+                        :class="{ 'active': isLinkActive('Home') }"
                         @click="setActiveLink('Home')">
                         <HomeIcon class="h-5 w-5 mr-3"/>
                         Home
                     </li>
                     <li
-                        class="flex items-center active-hover px-4 py-2 cursor-pointer transition-all duration-300 ease-in-out rounded-[45px_10px_45px]"
-                        :class="{ 'active': activeLink === 'Profile' }"
-                        @click="setActiveLink('Profile')">
-                        <UserCircleIcon class="h-5 w-5 mr-3"/>
-                        Profile
+                        class="flex items-center justify-between active-hover px-4 py-2 cursor-pointer transition-all duration-300 ease-in-out rounded-[45px_10px_45px]"
+                        :class="{ 'parent-active': isParentActive('Profile') }"
+                        @click="toggleSubmenu('Profile')">
+                        <div class="flex items-center">
+                            <UserCircleIcon class="h-5 w-5 mr-3"/>
+                            Profile
+                        </div>
+                        <!-- Submenu indicator toggle -->
+                        <span v-if="submenuVisibility['Profile']">
+                            <ChevronUpIcon class="h-5 w-5"/>
+                        </span>
+                        <span v-else>
+                            <ChevronDownIcon class="h-5 w-5"/>
+                        </span>
                     </li>
-                    <li
-                        class="flex items-center active-hover px-4 py-2 cursor-pointer transition-all duration-300 ease-in-out rounded-[45px_10px_45px]"
-                        :class="{ 'active': activeLink === 'Settings' }"
-                        @click="setActiveLink('Settings')">
-                        <CogIcon class="h-5 w-5 mr-3"/>
-                        Settings
-                    </li>
-                    <li
-                        class="flex items-center active-hover px-4 py-2 cursor-pointer transition-all duration-300 ease-in-out rounded-[45px_10px_45px]"
-                        :class="{ 'active': activeLink === 'Logout' }"
-                        @click="setActiveLink('Logout')">
-                        <ArrowLeftStartOnRectangleIcon class="h-5 w-5 mr-3"/>
-                        Logout
-                    </li>
+                    <!-- Submenu items -->
+                    <ul v-show="submenuVisibility['Profile']" class="pl-8 space-y-1">
+                        <li class="flex px-2 py-1 cursor-pointer transition-all duration-300 ease-in-out rounded-[45px_10px_45px]"
+                            :class="{ 'submenu-active': isLinkActive('Profile/Settings') }"
+                            @click="setActiveLink('Profile/Settings')">
+
+                            <CogIcon class="h-5 w-5 mr-3"/>
+                            Settings
+                        </li>
+                        <li class="flex px-2 py-1 cursor-pointer transition-all duration-300 ease-in-out rounded-[45px_10px_45px]"
+                            :class="{ 'submenu-active': isLinkActive('Profile/Logout') }"
+                            @click="setActiveLink('Profile/Logout')">
+                            <ArrowLeftStartOnRectangleIcon class="h-5 w-5 mr-3"/>
+                            Logout
+                        </li>
+                    </ul>
                 </ul>
             </nav>
         </div>
@@ -88,6 +128,7 @@ const setActiveLink = (link) => {
                 </Link>
             </div>
             <!-- Additional content can go here -->
+            <slot />
         </div>
     </div>
 </template>
@@ -104,5 +145,13 @@ const setActiveLink = (link) => {
 
 .top-bar {
     background: linear-gradient(90deg, #4e54c8 0%, #8f94fb 100%);
+}
+.submenu-active, .submenu-active:hover {
+    background: linear-gradient(120deg, #02278c 0%, #0356fc 100%);
+    border-radius: 30px 10px 30px;
+}
+.parent-active{
+    font-weight: bold;
+    color: snow;
 }
 </style>
