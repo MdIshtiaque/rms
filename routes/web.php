@@ -12,7 +12,6 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('admin/dashboard', function () {
-        sleep(1);
         return Inertia::render('Backend/Dashboard');
     })->name('dashboard');
     Route::inertia('/admin/users', 'Backend/Users')->name('users');

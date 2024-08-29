@@ -20,8 +20,10 @@
         "@inertiajs/vue3": "^1.2.0",
         "@vitejs/plugin-vue": "^5.1.2",
         "@vue-hero-icons/outline": "^1.7.2",
+        "chart.js": "^4.4.4",
         "material-icons": "^1.13.12",
         "remixicon": "^4.3.0",
-        "vue": "^3.4.38"
+        "vue": "^3.4.38",
+        "vue-chartjs": "^5.3.1"
     }
 }

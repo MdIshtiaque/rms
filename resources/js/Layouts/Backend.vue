@@ -9,20 +9,27 @@ import {
     UserCircleIcon,
     Bars3BottomRightIcon,
     Bars3Icon,
-    UserIcon
-} from "@heroicons/vue/24/solid";
-import { Link } from "@inertiajs/vue3";  // Make sure this import is correct
+    UserIcon,
+} from '@heroicons/vue/24/solid';
+import { Link } from '@inertiajs/vue3';
 
 const isSidebarVisible = ref(true);
 const activeLink = ref('Home'); // Default active link
 const submenuVisibility = ref({});
+
+const isUserMenuVisible = ref(false);
+
+const toggleUserMenu = () => {
+    isUserMenuVisible.value = !isUserMenuVisible.value;
+};
+
+// Function to toggle sidebar visibility
 const toggleSidebar = () => {
     isSidebarVisible.value = !isSidebarVisible.value;
 };
 
 // Toggles the visibility of submenus
 const toggleSubmenu = (name) => {
-    // Automatically close other submenus when one is opened
     if (!submenuVisibility.value[name]) {
         for (const key in submenuVisibility.value) {
             submenuVisibility.value[key] = false;
@@ -31,9 +38,9 @@ const toggleSubmenu = (name) => {
     submenuVisibility.value[name] = !submenuVisibility.value[name];
 };
 
+// Sets the active link and closes submenus if necessary
 const setActiveLink = (link) => {
     activeLink.value = link;
-    // Close all submenus when selecting a main menu item that doesn't have submenus
     if (!link.includes('/')) {
         for (const key in submenuVisibility.value) {
             submenuVisibility.value[key] = false;
@@ -44,52 +51,91 @@ const setActiveLink = (link) => {
     }
 };
 
+// Checks if a link is active
 const isLinkActive = (name) => {
     return activeLink.value.startsWith(name);
 };
+
+// Checks if a parent item is active
 const isParentActive = (parent) => {
     return Object.keys(submenuVisibility.value).some(
-        key => key.startsWith(parent) && submenuVisibility.value[key] && isLinkActive(parent)
+        (key) => key.startsWith(parent) && submenuVisibility.value[key] && isLinkActive(parent)
     );
 };
 </script>
-
-
 <template>
     <div class="flex w-full h-screen">
         <!-- Sidebar -->
-        <div
-            :class="`sidebar transition-width duration-700 ease-out ${isSidebarVisible ? 'w-[100%] sm:w-[15%]' : 'w-0'} h-full text-white shadow-lg`">
+        <div :class="`sidebar transition-all duration-700 ease-out ${isSidebarVisible ? 'ml-0' : '-ml-64'} h-full text-white shadow-lg`"
+            :style="{ width: '256px' }">
             <div class="flex flex-col items-center w-full p-4">
-                <img src="../../../public/assets/logo3.png" 
-                     class="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 mb-4 rounded-full border-2 border-gray-700 transition-all duration-300"
-                     alt="Logo">
-                <hr class="w-full border-gray-600">
+                <div class="flex items-center justify-center w-full mb-4">
+                    <img src="../../../public/assets/logo3.png"
+                        class="h-16 w-16 rounded-full border-2 border-blue-400 shadow-md transition-all duration-300 hover:scale-105"
+                        alt="Logo" />
+                    <h1 class="ml-3 text-xl font-bold text-white">RMS</h1>
+                </div>
+                <hr class="w-full border-blue-300 opacity-30 mb-4" />
+                <!-- Compact User information section -->
+                <div class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg p-3 shadow-md relative">
+                    <div class="flex items-center space-x-3">
+                        <img class="h-10 w-10 rounded-full border-2 border-white shadow-sm"
+                            :src="$page.props.auth.user.avatar || 'https://via.placeholder.com/150'" alt="User avatar">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-white truncate">
+                                {{ $page.props.auth.user.name }}
+                            </p>
+                            <p class="text-xs text-blue-200 truncate">
+                                {{ $page.props.auth.user.email }}
+                            </p>
+                            <div class="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                {{ $page.props.auth.user.role || 'Admin' }}
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button @click="toggleUserMenu"
+                                class="text-white hover:text-yellow-300 transition-colors duration-200 focus:outline-none">
+                                <CogIcon class="h-5 w-5" />
+                            </button>
+                            <!-- User menu dropdown -->
+                            <div v-if="isUserMenuVisible"
+                                class="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+                                <Link href="/admin/profile"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Your Profile</Link>
+                                <Link href="/admin/settings"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</Link>
+                                <hr class="my-1">
+                                <Link href="/logout" method="post" as="button"
+                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                Sign out</Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <nav class="mt-5 px-2">
+            <hr class="w-full border-blue-300 opacity-30 mb-4" />
+            <nav class="mt-6 px-2">
                 <ul class="space-y-2">
-                    <Link
-                        href="/admin/dashboard"
+                    <Link href="/admin/dashboard"
                         class="flex items-center active-hover px-4 py-2 cursor-pointer transition-all duration-300 ease-in-out rounded-[45px_10px_45px]"
-                        :class="{ 'active': $page.component === 'Backend/Dashboard' }"
-                        @click="setActiveLink('Dashboard')"
-                    >
-                        <HomeIcon class="h-5 w-5 mr-3" />
-                        Dashboard
+                        :class="{ active: $page.component === 'Backend/Dashboard' }"
+                        @click="setActiveLink('Dashboard')">
+                    <HomeIcon class="h-5 w-5 mr-3" />
+                    Dashboard
                     </Link>
                     <Link href="/admin/users"
                         class="flex items-center active-hover px-4 py-2 cursor-pointer transition-all duration-300 ease-in-out rounded-[45px_10px_45px]"
-                        :class="{ 'active': $page.component === 'Backend/User' }" @click="setActiveLink('Users')">
+                        :class="{ active: $page.component === 'Backend/Users' }" @click="setActiveLink('Users')">
                     <UserCircleIcon class="h-5 w-5 mr-3" />
                     Users
                     </Link>
                     <li class="flex items-center justify-between active-hover px-4 py-2 cursor-pointer transition-all duration-300 ease-in-out rounded-[45px_10px_45px]"
-                        :class="{ 'parent-active': isParentActive('Profile') }" @click="toggleSubmenu('Profile')">
+                        :class="{ 'parent-active': isParentActive('Profile') }" @click="toggleSubmenu('Profile')"
+                        :aria-expanded="submenuVisibility['Profile']">
                         <div class="flex items-center">
                             <UserCircleIcon class="h-5 w-5 mr-3" />
                             Profile
                         </div>
-                        <!-- Submenu indicator toggle -->
                         <span v-if="submenuVisibility['Profile']">
                             <ChevronUpIcon class="h-5 w-5" />
                         </span>
@@ -102,52 +148,49 @@ const isParentActive = (parent) => {
                         <li class="flex px-2 py-1 cursor-pointer transition-all duration-300 ease-in-out rounded-[45px_10px_45px]"
                             :class="{ 'submenu-active': isLinkActive('Profile/Settings') }"
                             @click="setActiveLink('Profile/Settings')">
-
                             <CogIcon class="h-5 w-5 mr-3" />
                             Settings
-                        </li>
-                        <li class="flex px-2 py-1 cursor-pointer transition-all duration-300 ease-in-out rounded-[45px_10px_45px]"
-                            :class="{ 'submenu-active': isLinkActive('Profile/Account') }"
-                            @click="setActiveLink('Profile/Account')">
-                            <UserIcon class="h-5 w-5 mr-3" />
-                            Account
-                        </li>
-                        <li class="flex px-2 py-1 cursor-pointer transition-all duration-300 ease-in-out rounded-[45px_10px_45px]"
-                            :class="{ 'submenu-active': isLinkActive('Profile/Logout') }"
-                            @click="setActiveLink('Profile/Logout')">
-                            <ArrowLeftStartOnRectangleIcon class="h-5 w-5 mr-3" />
-                            Logout
                         </li>
                     </ul>
                 </ul>
             </nav>
         </div>
 
-        <!-- Main Content Area -->
-        <div
-            :class="`flex flex-col transition-width duration-300 ease-in-out ${isSidebarVisible && !isSidebarVisible ? 'w-[100%] sm:w-[85%]' : 'w-full'}`"
-        >
-            <div
-                class="top-bar w-full h-16 bg-gradient-to-r from-blue-500 to-blue-700 text-white flex justify-between items-center p-5 shadow-md">
-                <button @click="toggleSidebar" class="focus:outline-none" aria-label="Toggle Sidebar">
-                    <Bars3Icon v-if="!isSidebarVisible" class="h-6 w-6" />
-                    <Bars3BottomRightIcon v-else class="h-6 w-6" />
-                </button>
+        <!-- Main content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top bar -->
+            <header class=" bg-gradient-to-r from-blue-500 to-blue-700 shadow-sm z-10">
+                <div class="w-full mx-auto py-4 px-4 sm:px-6 lg:px-8">
+                    <div class="flex items-center justify-between text-white">
+                        <button @click="toggleSidebar" class="text-white focus:outline-none focus:text-white">
+                            <Bars3Icon v-if="!isSidebarVisible" class="h-6 w-6" />
+                            <Bars3BottomRightIcon v-else class="h-6 w-6" />
+                        </button>
+                        <div class="flex items-center">
+                            <Link href="/logout" method="post" as="button" type="button"
+                                class="flex gap-2 focus:outline-none header font-bold cursor-pointer shadow-2xl transition-colors duration-300 ease-in-out transform hover:text-indigo-600 active:scale-95 active:shadow-none"
+                                aria-label="Logout">
+                            <ArrowLeftStartOnRectangleIcon class="h-6 w-6 hover:text-indigo-600" />
+                            <span class="hidden md:block">Logout</span>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </header>
 
-                <Link href="/logout" method="post" as="button" type="button"
-                    class="flex gap-2 focus:outline-none header font-bold cursor-pointer shadow-2xl transition-colors duration-300 ease-in-out transform hover:text-indigo-600 active:scale-95 active:shadow-none"
-                    aria-label="Logout">
-                <ArrowLeftStartOnRectangleIcon class="h-6 w-6" />
-                Logout
-                </Link>
-            </div>
-            <!-- Scrollable content area -->
-            <div class="flex-1 overflow-y-auto">
-                <slot />
-            </div>
+            <!-- Page content -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+                <div class="w-full mx-auto py-6 sm:px-6 lg:px-8">
+                    <slot></slot>
+                </div>
+            </main>
         </div>
     </div>
 </template>
+
+
+
+
 
 <style scoped>
 .active,
@@ -159,7 +202,6 @@ const isParentActive = (parent) => {
 .sidebar {
     overflow: hidden;
     background: linear-gradient(0deg, #4e54c8 0%, #8f94fb 100%);
-    flex: 1;
 }
 
 .top-bar {
