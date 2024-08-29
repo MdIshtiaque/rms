@@ -20,6 +20,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'profileImage',  // Add this line if it's not already there
     ];
 
     /**

@@ -21,9 +21,11 @@
         "@vitejs/plugin-vue": "^5.1.2",
         "@vue-hero-icons/outline": "^1.7.2",
         "chart.js": "^4.4.4",
+        "lodash": "^4.17.21",
         "material-icons": "^1.13.12",
         "remixicon": "^4.3.0",
         "vue": "^3.4.38",
-        "vue-chartjs": "^5.3.1"
+        "vue-chartjs": "^5.3.1",
+        "vue-toastification": "^2.0.0-rc.5"
     }
 }
