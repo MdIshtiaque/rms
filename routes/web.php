@@ -8,6 +8,9 @@ use Inertia\Inertia;
 Route::middleware('guest')->group(function () {
     Route::inertia('/', 'Home')->name('home');
     Route::inertia('/login', 'Login')->name('login');
+    Route::inertia('/about', 'About')->name('about');
+    Route::inertia('/services', 'Services')->name('services');
+    Route::inertia('/contact', 'Contact')->name('contact');
     Route::post('/login', [AuthController::class, 'login']);
 });
 

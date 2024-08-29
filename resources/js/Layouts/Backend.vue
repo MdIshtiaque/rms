@@ -81,6 +81,7 @@ onUnmounted(() => {
 </script>
 
 <template>
+    
     <div class="flex w-full h-screen">
         <!-- Sidebar -->
         <div :class="`sidebar transition-all duration-700 ease-out ${isSidebarVisible ? 'ml-0' : '-ml-[28rem] md:-ml-64'
