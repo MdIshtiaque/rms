@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import {
     ArrowLeftStartOnRectangleIcon,
     ChevronDownIcon,
@@ -10,6 +10,7 @@ import {
     Bars3BottomRightIcon,
     Bars3Icon,
     UserIcon,
+    XMarkIcon,
 } from '@heroicons/vue/24/solid';
 import { Link } from '@inertiajs/vue3';
 
@@ -23,12 +24,17 @@ const toggleUserMenu = () => {
     isUserMenuVisible.value = !isUserMenuVisible.value;
 };
 
-// Function to toggle sidebar visibility
+const isMobile = ref(window.innerWidth <= 768);
+
 const toggleSidebar = () => {
     isSidebarVisible.value = !isSidebarVisible.value;
+    if (isMobile.value && !isSidebarVisible.value) {
+        document.body.style.overflow = 'auto';
+    } else if (isMobile.value) {
+        document.body.style.overflow = 'hidden';
+    }
 };
 
-// Toggles the visibility of submenus
 const toggleSubmenu = (name) => {
     if (!submenuVisibility.value[name]) {
         for (const key in submenuVisibility.value) {
@@ -38,7 +44,6 @@ const toggleSubmenu = (name) => {
     submenuVisibility.value[name] = !submenuVisibility.value[name];
 };
 
-// Sets the active link and closes submenus if necessary
 const setActiveLink = (link) => {
     activeLink.value = link;
     if (!link.includes('/')) {
@@ -46,29 +51,45 @@ const setActiveLink = (link) => {
             submenuVisibility.value[key] = false;
         }
     }
-    if (window.innerWidth <= 768) {
+    if (isMobile.value) {
         isSidebarVisible.value = false;
+        document.body.style.overflow = 'auto';
     }
 };
 
-// Checks if a link is active
 const isLinkActive = (name) => {
     return activeLink.value.startsWith(name);
 };
 
-// Checks if a parent item is active
 const isParentActive = (parent) => {
     return Object.keys(submenuVisibility.value).some(
         (key) => key.startsWith(parent) && submenuVisibility.value[key] && isLinkActive(parent)
     );
 };
+
+onMounted(() => {
+    window.addEventListener('resize', () => {
+        isMobile.value = window.innerWidth <= 768;
+    });
+});
+
+onUnmounted(() => {
+    window.removeEventListener('resize', () => {
+        isMobile.value = window.innerWidth <= 768;
+    });
+});
 </script>
+
 <template>
     <div class="flex w-full h-screen">
         <!-- Sidebar -->
-        <div :class="`sidebar transition-all duration-700 ease-out ${isSidebarVisible ? 'ml-0' : '-ml-64'} h-full text-white shadow-lg`"
-            :style="{ width: '256px' }">
+        <div :class="`sidebar transition-all duration-700 ease-out ${isSidebarVisible ? 'ml-0' : '-ml-[28rem] md:-ml-64'
+            } ${isMobile ? 'fixed inset-0 z-50' : ''} h-full text-white shadow-lg`"
+            :style="{ width: isMobile ? '100%' : '256px' }">
             <div class="flex flex-col items-center w-full p-4">
+                <button v-if="isMobile" @click="toggleSidebar" class="absolute top-4 right-4 text-white">
+                    <XMarkIcon class="h-6 w-6" />
+                </button>
                 <div class="flex items-center justify-center w-full mb-4">
                     <img src="../../../public/assets/logo3.png"
                         class="h-16 w-16 rounded-full border-2 border-blue-400 shadow-md transition-all duration-300 hover:scale-105"
@@ -88,7 +109,8 @@ const isParentActive = (parent) => {
                             <p class="text-xs text-blue-200 truncate">
                                 {{ $page.props.auth.user.email }}
                             </p>
-                            <div class="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            <div
+                                class="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                 {{ $page.props.auth.user.role || 'Admin' }}
                             </div>
                         </div>
@@ -159,7 +181,7 @@ const isParentActive = (parent) => {
         <!-- Main content -->
         <div class="flex-1 flex flex-col overflow-hidden">
             <!-- Top bar -->
-            <header class=" bg-gradient-to-r from-blue-500 to-blue-700 shadow-sm z-10">
+            <header class="bg-gradient-to-r from-blue-500 to-blue-700 shadow-sm z-10">
                 <div class="w-full mx-auto py-4 px-4 sm:px-6 lg:px-8">
                     <div class="flex items-center justify-between text-white">
                         <button @click="toggleSidebar" class="text-white focus:outline-none focus:text-white">
@@ -187,10 +209,6 @@ const isParentActive = (parent) => {
         </div>
     </div>
 </template>
-
-
-
-
 
 <style scoped>
 .active,
@@ -221,5 +239,11 @@ const isParentActive = (parent) => {
 
 .overflow-y-auto {
     overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        background: linear-gradient(0deg, #4e54c8 0%, #8f94fb 100%);
+    }
 }
 </style>
