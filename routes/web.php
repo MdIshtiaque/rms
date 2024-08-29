@@ -15,5 +15,6 @@ Route::middleware('auth')->group(function () {
         sleep(1);
         return Inertia::render('Backend/Dashboard');
     })->name('dashboard');
+    Route::inertia('/admin/users', 'Backend/Users')->name('users');
     Route::post('/logout', [AuthController::class, 'logout']);
 });
