@@ -1,18 +1,19 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
 import {
-    ArrowLeftStartOnRectangleIcon,
-    ChevronDownIcon,
-    ChevronUpIcon,
-    CogIcon,
-    HomeIcon,
-    UserCircleIcon,
-    Bars3BottomRightIcon,
-    Bars3Icon,
-    UserIcon,
-    XMarkIcon,
+  ArrowLeftStartOnRectangleIcon,
+  Bars3BottomRightIcon,
+  Bars3Icon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  CogIcon,
+  HomeIcon,
+  UserCircleIcon,
+  XMarkIcon
 } from '@heroicons/vue/24/solid';
 import { Link } from '@inertiajs/vue3';
+import { onMounted, onUnmounted, ref } from 'vue';
+import { ChatBubbleLeftRightIcon } from '@heroicons/vue/24/solid';
+import Chatbot from '@/Components/Chatbot.vue';
 
 const isSidebarVisible = ref(true);
 const activeLink = ref('Home'); // Default active link
@@ -67,6 +68,12 @@ const isParentActive = (parent) => {
     );
 };
 
+const isChatbotOpen = ref(false);
+
+const toggleChatbot = () => {
+    isChatbotOpen.value = !isChatbotOpen.value;
+};
+
 onMounted(() => {
     window.addEventListener('resize', () => {
         isMobile.value = window.innerWidth <= 768;
@@ -100,8 +107,10 @@ onUnmounted(() => {
                 <!-- Compact User information section -->
                 <div class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg p-3 shadow-md relative">
                     <div class="flex items-center space-x-3">
-                        <img class="h-10 w-10 rounded-full border-2 border-white shadow-sm"
-                            :src="$page.props.auth.user.avatar || 'https://via.placeholder.com/150'" alt="User avatar">
+                     <img class="h-10 w-10 rounded-full border-2 border-white shadow-sm"
+                        :src="$page.props.auth.user.profileImage ? `/storage/${$page.props.auth.user.profileImage}` : 'https://via.placeholder.com/150'"
+                          alt="User avatar">
+
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-white truncate">
                                 {{ $page.props.auth.user.name }}
@@ -206,6 +215,14 @@ onUnmounted(() => {
                     <slot></slot>
                 </div>
             </main>
+        </div>
+
+        <!-- Chatbot -->
+        <div class="fixed bottom-4 right-4 z-50">
+            <button @click="toggleChatbot" class="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                <ChatBubbleLeftRightIcon class="h-6 w-6" />
+            </button>
+            <Chatbot v-if="isChatbotOpen" @close="toggleChatbot" />
         </div>
     </div>
 </template>

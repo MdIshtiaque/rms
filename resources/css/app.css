@@ -79,14 +79,16 @@
 }
 
 .bg-bubbles li {
-    @apply absolute list-none block w-10 h-10 rounded-full bg-white;
-    background-color: rgba(255, 255, 255, 0.1);
-    bottom: -50px;
-    animation: square 20s linear infinite;
+    @apply absolute list-none block rounded-full;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2));
+    backdrop-filter: blur(5px);
+    bottom: -150px;
+    animation: float 15s ease-in-out infinite;
 }
 
 .bg-bubbles li:nth-child(1) {
     right: 10%;
+    @apply w-16 h-16;
 }
 
 .bg-bubbles li:nth-child(2) {
@@ -98,6 +100,7 @@
 
 .bg-bubbles li:nth-child(3) {
     right: 25%;
+    @apply w-12 h-12;
     animation-delay: 4s;
 }
 
@@ -144,11 +147,17 @@
     animation-delay: 11s;
 }
 
-@keyframes square {
+@keyframes float {
     0% {
-        transform: translateY(0);
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(-400px) rotate(180deg);
+        opacity: 0.5;
     }
     100% {
-        transform: translateY(-1000px) rotate(-600deg);
+        transform: translateY(-800px) rotate(360deg);
+        opacity: 0;
     }
 }

@@ -7,6 +7,8 @@ import { useToast } from 'vue-toastification';
 import AddUserModal from '../../Components/AddUserModal.vue';
 import Pagination from '../../Components/Pagination.vue';
 import Backend from "../../Layouts/Backend.vue";
+import EditUserModal from '../../Components/EditUserModal.vue';
+import ConfirmDeleteModal from '../../Components/ConfirmDeleteModal.vue';
 
 defineOptions({ layout: Backend })
 
@@ -15,6 +17,7 @@ const toast = useToast();
 const props = defineProps({
   users: Object,
   filters: Object,
+  availableRoles: Array,
 });
 
 const users = ref(props.users);
@@ -30,6 +33,8 @@ const search = debounce(() => {
 watch(searchQuery, search);
 
 const isAddUserModalOpen = ref(false);
+const isEditUserModalOpen = ref(false);
+const selectedUser = ref(null);
 
 const openAddUserModal = () => {
   isAddUserModalOpen.value = true;
@@ -39,8 +44,39 @@ const closeAddUserModal = () => {
   isAddUserModalOpen.value = false;
 };
 
+const openEditUserModal = (user) => {
+  selectedUser.value = user;
+  isEditUserModalOpen.value = true;
+};
+
+const closeEditUserModal = () => {
+  isEditUserModalOpen.value = false;
+  selectedUser.value = null;
+};
+
 const handleUserAdded = () => {
   router.visit('/admin/users', { only: ['users'] });
+};
+
+const handleUserUpdated = () => {
+  router.visit('/admin/users', { only: ['users'] });
+};
+
+const deleteUser = (userId) => {
+  if (confirm('Are you sure you want to delete this user?')) {
+    router.delete(`/admin/user/${userId}/delete`, {
+      preserveState: true,
+      preserveScroll: true,
+      onSuccess: () => {
+        toast.success('User deleted successfully');
+        router.visit('/admin/users', { only: ['users'] });
+      },
+      onError: (errors) => {
+        toast.error('Failed to delete user');
+        console.error(errors);
+      },
+    });
+  }
 };
 
 const tableHeight = ref('calc(100vh - 300px)');
@@ -62,6 +98,37 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', updateTableHeight);
 });
+
+const isDeleteModalOpen = ref(false);
+const userToDelete = ref(null);
+
+const openDeleteModal = (user) => {
+  userToDelete.value = user;
+  isDeleteModalOpen.value = true;
+};
+
+const closeDeleteModal = () => {
+  isDeleteModalOpen.value = false;
+  userToDelete.value = null;
+};
+
+const confirmDelete = () => {
+  if (userToDelete.value) {
+    router.delete(`/admin/user/${userToDelete.value.id}/delete`, {
+      preserveState: true,
+      preserveScroll: true,
+      onSuccess: () => {
+        toast.success('User deleted successfully');
+        closeDeleteModal();
+        handleUserAdded();
+      },
+      onError: () => {
+        toast.error('Failed to delete user');
+        closeDeleteModal();
+      },
+    });
+  }
+};
 </script>
 
 <template>
@@ -129,10 +196,10 @@ onUnmounted(() => {
                     <div class="text-sm text-gray-900">{{ user.role }}</div>
                   </td>
                   <td class="px-6 py-2 whitespace-nowrap text-right text-sm font-medium w-1/5 sm:w-1/4 md:w-1/5">
-                    <button class="text-indigo-600 hover:text-indigo-900 mr-2">
+                    <button @click="openEditUserModal(user)" class="text-indigo-600 hover:text-indigo-900 mr-2">
                       <PencilIcon class="h-5 w-5 inline" />
                     </button>
-                    <button class="text-red-600 hover:text-red-900">
+                    <button @click="openDeleteModal(user)" class="text-red-600 hover:text-red-900">
                       <TrashIcon class="h-5 w-5 inline" />
                     </button>
                   </td>
@@ -150,7 +217,23 @@ onUnmounted(() => {
   </div>
   <AddUserModal
     :is-open="isAddUserModalOpen"
+    :available-roles="availableRoles"
     @close="closeAddUserModal"
+    @user-added="handleUserAdded"
+  />
+  <EditUserModal
+    :is-open="isEditUserModalOpen"
+    :available-roles="availableRoles"
+    :user="selectedUser"
+    @close="closeEditUserModal"
+    @user-updated="handleUserUpdated"
+  />
+  <ConfirmDeleteModal
+    :is-open="isDeleteModalOpen"
+    title="Delete User"
+    :message="`Are you sure you want to delete ${userToDelete?.name}? This action cannot be undone.`"
+    @close="closeDeleteModal"
+    @confirm="confirmDelete"
     @user-added="handleUserAdded"
   />
 </template>

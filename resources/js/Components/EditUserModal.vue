@@ -1,55 +1,59 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { XMarkIcon, UserCircleIcon } from '@heroicons/vue/24/outline';
 import { useForm } from "@inertiajs/vue3";
 import { useToast } from 'vue-toastification';
 
 const props = defineProps({
   isOpen: Boolean,
+  user: Object,
   availableRoles: Array,
 });
 
-const emit = defineEmits(['close', 'userAdded']);
+const emit = defineEmits(['close', 'userUpdated']);
 
 const toast = useToast();
 
 const form = useForm({
-  name: null,
-  email: null,
-  role: null,
-  password: null,
-  password_confirmation: null,
+  name: '',
+  email: '',
+  role: '',
+  password: '',
+  password_confirmation: '',
   profileImage: null,
 });
 
-// const roles = ['admin', 'user'];
+const roles = ['admin', 'user'];
 
 const profileImagePreview = ref(null);
 
+watch(() => props.user, (newUser) => {
+  if (newUser) {
+    form.name = newUser.name;
+    form.email = newUser.email;
+    form.role = newUser.role;
+    profileImagePreview.value = newUser.profileImage ? `/storage/${newUser.profileImage}` : null;
+  }
+}, { immediate: true });
+
 const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        form.profileImage = file;
-        profileImagePreview.value = URL.createObjectURL(file);
-    }
+  const file = event.target.files[0];
+  if (file) {
+    form.profileImage = file;
+    profileImagePreview.value = URL.createObjectURL(file);
+  }
 };
 
 const submit = () => {
-    form.post('/admin/user/store', {
-        preserveScroll: true,
-        onSuccess: () => {
-            toast.success('User created successfully');
-            emit('userAdded');
-            emit('close');
-            resetForm();
-        },
-        onError: () => form.reset('password', 'password_confirmation')
-    });
-};
-
-const resetForm = () => {
-    form.reset();
-    profileImagePreview.value = null;
+  form.post(`/admin/user/${props.user.id}/update`, {
+    preserveScroll: true,
+    onSuccess: () => {
+      toast.success('User updated successfully');
+      emit('userUpdated');
+      emit('close');
+    },
+    onError: () => form.reset('password', 'password_confirmation')
+  });
 };
 </script>
 
@@ -72,7 +76,7 @@ const resetForm = () => {
             <div class="sm:flex sm:items-start">
               <div class="w-full mt-3 text-center sm:mt-0 sm:text-left">
                 <h3 class="text-lg font-medium leading-6 text-gray-900" id="modal-title">
-                  Add New User
+                  Edit User
                 </h3>
                 <div class="mt-2">
                   <div class="space-y-4">
@@ -104,18 +108,18 @@ const resetForm = () => {
                       <select id="role" v-model="form.role" required class="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         <option value="" disabled>Select a role</option>
                         <option v-for="role in availableRoles" :key="role" :value="role">{{ role }}</option>
-                    </select>
-                    <small class="error" v-if="form.errors.role">{{ form.errors.role }}</small>
+                      </select>
+                      <small class="error" v-if="form.errors.role">{{ form.errors.role }}</small>
                     </div>
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" id="password" v-model="form.password" required class="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <label for="password" class="block text-sm font-medium text-gray-700">New Password (optional)</label>
+                        <input type="password" id="password" v-model="form.password" class="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         <small class="error" v-if="form.errors.password">{{ form.errors.password }}</small>
                       </div>
                       <div>
-                        <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm Password</label>
-                        <input type="password" id="password_confirmation" v-model="form.password_confirmation" required class="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
+                        <input type="password" id="password_confirmation" v-model="form.password_confirmation" class="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                       </div>
                     </div>
                   </div>
@@ -125,7 +129,7 @@ const resetForm = () => {
           </div>
           <div class="px-4 py-3 bg-gray-50 sm:px-6 sm:flex sm:flex-row-reverse">
             <button type="submit" :disabled="form.processing" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm">
-              Add User
+              Update User
             </button>
             <button type="button" @click="emit('close')" class="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
               Cancel
