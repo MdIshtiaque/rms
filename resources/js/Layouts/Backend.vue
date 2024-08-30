@@ -81,11 +81,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-    
+
     <div class="flex w-full h-screen">
         <!-- Sidebar -->
-        <div :class="`sidebar transition-all duration-700 ease-out ${isSidebarVisible ? 'ml-0' : '-ml-[28rem] md:-ml-64'
-            } ${isMobile ? 'fixed inset-0 z-50' : ''} h-full text-white shadow-lg`"
+        <div :class="`sidebar transition-all duration-700 ease-out ${isSidebarVisible ? 'ml-0' : '-ml-[28rem] md:-ml-64'} ${isMobile ? 'fixed inset-0 z-50' : ''} h-full text-white shadow-lg`"
             :style="{ width: isMobile ? '100%' : '256px' }">
             <div class="flex flex-col items-center w-full p-4">
                 <button v-if="isMobile" @click="toggleSidebar" class="absolute top-4 right-4 text-white">
@@ -203,7 +202,7 @@ onUnmounted(() => {
 
             <!-- Page content -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-                <div class="w-full mx-auto py-6 sm:px-6 lg:px-8">
+                <div class="w-full h-full mx-auto spx-6 md:px-8">
                     <slot></slot>
                 </div>
             </main>
