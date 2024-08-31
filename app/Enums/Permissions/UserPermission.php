@@ -8,5 +8,6 @@ enum UserPermission: string
     case EDIT_USER = 'edit user';
     case DELETE_USER = 'delete user';
     case VIEW_USERS = 'view users';
+    case ALL_USER_PERMISSIONS = 'all user permissions';
     // Add more permissions as needed
 }
